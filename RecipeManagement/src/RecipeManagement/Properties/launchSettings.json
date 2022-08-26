@@ -1,0 +1,26 @@
+{
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AUTH_AUDIENCE": "recipe_management",
+        "AUTH_AUTHORITY": "http://localhost:3255/auth/realms/DevRealm",
+        "AUTH_AUTHORIZATION_URL": "http://localhost:3255/auth/realms/DevRealm/protocol/openid-connect/auth",
+        "AUTH_TOKEN_URL": "http://localhost:3255/auth/realms/DevRealm/protocol/openid-connect/token",
+        "AUTH_CLIENT_ID": "recipe_management.swagger",
+        "AUTH_CLIENT_SECRET": "974d6f71-d41b-4601-9a7a-a33081f80687",
+        "DB_CONNECTION_STRING": "Host=localhost;Port=52400;Database=dev_recipemanagement;Username=postgres;Password=postgres",
+        "RMQ_HOST": "localhost",
+        "RMQ_VIRTUAL_HOST": "/",
+        "RMQ_USERNAME": "guest",
+        "RMQ_PASSWORD": "guest",
+        "RMQ_PORT": "52403",
+        "JAEGER_HOST": "localhost"
+      },
+      "applicationUrl": "https://localhost:5375"
+    }
+  }
+}

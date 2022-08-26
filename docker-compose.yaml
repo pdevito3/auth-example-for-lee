@@ -1,0 +1,77 @@
+version: '3.7'
+
+services:
+  keycloakdb:
+    image: postgres
+    ports:
+      - '52439:5432'
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+      - keycloak-data:/var/lib/postgresql/data
+  
+  keycloak:
+    image: sleighzy/keycloak:latest
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloakdb
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      DB_SCHEMA: public
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_HTTP_PORT: 8080
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, 
+      # and it shouldn't be used in production without knowledge. It is highly recommended that you read the 
+      # PostgreSQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: "ssl=true"
+    ports:
+      - 3255:8080
+    depends_on:
+      - keycloakdb
+
+  recipemanagement-db:
+    image: postgres
+    restart: always
+    ports:
+      - '52400:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dev_recipemanagement
+    volumes:
+      - recipemanagement-data:/var/lib/postgresql/data
+
+  rmq-message-broker:
+    image: masstransit/rabbitmq
+    restart: always
+    ports:
+      - '52404:15672' # RabbitMQ Management UI
+      - '52403:5672' # RabbitMQ Broker
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+#    port mappings: https://www.jaegertracing.io/docs/1.32/getting-started/
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14250:14250"
+      - "14268:14268"
+      - "14269:14269"
+      - "9411:9411"
+
+        
+volumes:
+  # compose volumes marker - do not delete
+  keycloak-data:
+  recipemanagement-data:
