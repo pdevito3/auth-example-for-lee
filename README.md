@@ -3,69 +3,43 @@
 This project was created with [Craftsman](https://github.com/pdevito3/craftsman).
 
 ## Getting Started
+### Docker Setup
 1. Run `docker-compose up --build` from your `.sln` directory to spin up your database(s) and other supporting 
 infrastructure depending on your configuration (e.g. RabbitMQ, Keycloak, Jaeger, etc.).
-2. Apply migrations
-    1. Make sure you have a migrations in your boundary project (there should be a `Migrations` directory in the project directory). 
-    If there isn't see [Running Migrations](#running-migrations) below.
-    2. Confirm your environment (`ASPNETCORE_ENVIRONMENT`) is set to `Development` using 
+
+### Keycloak Auth Server
+1. If using a Keycloak auth server, you'll need to use the scaffolded Pulumi setup or configure it manually (new realm, client, etc) or .
+   1. [Install the pulumi CLI](https://www.pulumi.com/docs/get-started/)
+   1. `cd` to your the `KeycloackPulumi` project directory
+   1. Run `pulumi up` to start the scaffolding process
+   1. Create a new stack by pressing `Enter` when prompted and then typing the name of the stack (e.g. `dev`). Alternatively
+      you can use the `pulumi stack init` command to make a new stack first.
+      > Note: The stack name must match the extension on your yaml config file (e.g. `Pulumi.dev.yaml`) would have a stack of `dev`.
+   1. Select yes to apply the configuration to your local Keycloak instance.
+   1. Navigate to keycloak client at `localhost:3255/auth` and login with `admin` for username and password to view config (if you want). 
+
+### Api
+If you want to run your api: 
+1. Make sure you have the [.NET 6 SDK](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks) installed 
+2. Make sure you have entity framework installed: `dotnet tool install --global dotnet-ef`
+3. Apply migrations
+    1. Confirm your environment (`ASPNETCORE_ENVIRONMENT`) is set to `Development` using 
     `$Env:ASPNETCORE_ENVIRONMENT = "Development"` for powershell or `export ASPNETCORE_ENVIRONMENT=Development` for bash.
-    3. `cd` to the boundary project root (e.g. `cd RecipeManagement/src/RecipeManagement`)
-    4. Run `dotnet ef database update` to apply your migrations.
+   2. `cd` to the boundary project root (e.g. `cd RecipeManagement/src/RecipeManagement`)
+   3. Run `dotnet ef database update` to apply your migrations.
+4. From the `RecipeManagement/src/RecipeManagement` directory, run the api: `dotnet run`
+5. Go to  `https://localhost:5375/swagger/index.html` to use swagger
 
-    > You can also stay in the `sln` root and run something like `dotnet ef database update --project RecipeManagement/src/RecipeManagement`
-3. If using a Keycloak auth server, you'll need to configure it manually (new realm, client, etc) or use the scaffolded Pulumi setup.
-    1. [Install the pulumi CLI](https://www.pulumi.com/docs/get-started/) 
-    1. `cd` to your scaffolded Pulumi project
-    1. Run `pulumi up` to start the scaffolding process
-    1. Create a new stack by pressing `Enter` when prompted and then typing the name of the stack (e.g. `dev`). Alternatively
-    you can use the `pulumi stack init` command to make a new stack first.
-        > Note: The stack name must match the extension on your yaml config file (e.g. `Pulumi.dev.yaml`) would have a stack of `dev`.
-    1. Select yes to apply the configuration to your local Keycloak instance.
-4. If running a BFF:
-    1. Make sure you have [`yarn` installed](https://yarnpkg.com/getting-started/install)
-    1. Run the project with `dotnet run` or your IDE
-
-### Running Your Project(s)
-Once you have your database(s) running, you can run your API(s), BFF, and Auth Servers by using 
-the `dotnet run` command or running your project(s) from your IDE of choice.   
-
-## Running Integration Tests
-To run integration tests:
-
-1. Ensure that you have docker installed.
-2. Go to your src directory for the bounded context that you want to test.
-3. Confirm that you have migrations in your infrastructure project. If you need to add them, see the [instructions below](#running-migrations).
-4. Run the tests
-
-> ⏳ If you don't have the database image pulled down to your machine, they will take some time on the first run.
-
-### Troubleshooting
-- If your entity has foreign keys, you might need to adjust some of your tests after scaffolding to accomodate them.
-
-## Running Migrations
-To create a new migration, make sure your environment is set to `Development`:
-
-### Powershell
-```powershell
-$Env:ASPNETCORE_ENVIRONMENT = "Development"
+### Next JS
+1. add an `.env.local` file to the root of your next project:
 ```
+NEXTAUTH_URL=http://localhost:8582
+NEXTAUTH_SECRET= 974d6f71-d41b-4601-9a7a-a33081f82188
 
-### Bash
-```bash
-export ASPNETCORE_ENVIRONMENT=Development
 ```
-
-Then run the following:
-
-```shell
-cd YourBoundedContextName/src/YourBoundedContextName
-dotnet ef migrations add "MigrationDescription"
-```
-
-To apply your migrations to your local db, make sure your database is running in docker run the following:
-
-```bash
-cd YourBoundedContextName/src/YourBoundedContextName
-dotnet ef database update
-```
+2. `cd` to next app
+2. Run `yarn` and then `yarn dev` 
+2. Go to `http://localhost:8582/`
+2. Press `Login`
+3. Enter `alice` for username and password. You will be prompted to change your password, you can change it to whatever you want.
+4. Use and explore 
